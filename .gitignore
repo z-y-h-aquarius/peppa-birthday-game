@@ -1,0 +1,11 @@
+# 编译生成文件
+build/
+debug/
+release/
+*.exe
+*.o
+*.obj
+
+# Qt 配置文件
+*.user
+*.pro.user
