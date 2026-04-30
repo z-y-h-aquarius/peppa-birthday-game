@@ -34,6 +34,7 @@ private:
     GraphicsImageButton* m_ovenLockBtn = nullptr;
     GraphicsImageButton* m_candlesBtn = nullptr;
     GraphicsImageButton* m_endExitBtn = nullptr;
+    GraphicsImageButton* m_restartBtn = nullptr;
 
     QMediaPlayer *m_player;
     QAudioOutput *m_audio;

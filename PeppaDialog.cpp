@@ -1,14 +1,14 @@
 #include "PeppaDialog.h"
 
 PeppaDialog::PeppaDialog(QGraphicsItem *parent)
-    : QGraphicsItem(parent)
+    :QGraphicsItem(parent)
 {
     //佩奇
-    m_peppa = new QGraphicsPixmapItem(this); // 父对象设为 this，自动管理内存
+    m_peppa = new QGraphicsPixmapItem(this); //父对象设为 this，自动管理内存
     m_peppa->setPixmap(QPixmap("://image/peppa.png"));
     m_peppa->setPos(0,376);
     m_peppa->setScale(0.74);
-    m_peppa->setZValue(90);
+    m_peppa->setZValue(200);
 
     //气泡（圆角）
     QPainterPath bubblePath;
@@ -42,6 +42,7 @@ PeppaDialog::PeppaDialog(QGraphicsItem *parent)
     m_clickTip->setPos(670,480);
     m_clickTip->setDefaultTextColor(Qt::gray);
     m_clickTip->setZValue(94);
+
 }
 
 //设置提示文字（外部调用接口）

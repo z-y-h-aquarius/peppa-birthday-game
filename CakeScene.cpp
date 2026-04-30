@@ -1,5 +1,6 @@
 #include "CakeScene.h"
 #include "PuzzleDialog.h"
+#include "MainScene.h"
 #include <QGraphicsScene>
 #include <QGraphicsDropShadowEffect>
 #include <QTimer>
@@ -36,9 +37,9 @@ CakeScene::CakeScene(GameScene *gameScene, QWidget *parent)
     //蛋糕放入烤箱的图片
     m_cakeInOvenImg = new QGraphicsPixmapItem;
     QPixmap ovenPix("://image/cakeinoven.png");
-    ovenPix = ovenPix.scaled(180,70,Qt::KeepAspectRatio,Qt::SmoothTransformation);
+    ovenPix = ovenPix.scaled(150,70,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     m_cakeInOvenImg->setPixmap(ovenPix);
-    m_cakeInOvenImg->setPos(150,415);
+    m_cakeInOvenImg->setPos(145,415);
     m_gameScene->m_scene.addItem(m_cakeInOvenImg);
     m_cakeInOvenImg->hide();
 
@@ -90,7 +91,7 @@ void CakeScene::onOvenLockClicked()
         m_ovenlockSolved = true;
         m_cakeInOvenImg->show();
 
-        QTimer::singleShot(5000,this,[=]() {
+        QTimer::singleShot(3000,this,[=]() {
             m_cakeInOvenImg->hide();
             m_cakeImg->show();
             m_candlesBtn->show();
@@ -222,9 +223,16 @@ void CakeScene::showEndCoverPage()
     m_endExitBtn->setPos(1020,510);
     m_endExitBtn->setZValue(1001); //按钮层级最高，设为1001，确保能被点到
 
+    //再玩一次
+    m_restartBtn = new GraphicsImageButton("://image/start_button.png","再玩一次",187,67);
+    m_restartBtn->setPos(1020,430);
+    m_restartBtn->setZValue(1001);
+
+
     //把所有图元加到场景里
     m_gameScene->m_scene.addItem(m_endBgItem);
     m_gameScene->m_scene.addItem(m_endExitBtn);
+    m_gameScene->m_scene.addItem(m_restartBtn);
 
     //退出点击
     connect(m_endExitBtn, &GraphicsImageButton::clicked, this, [=](){
@@ -238,5 +246,26 @@ void CakeScene::showEndCoverPage()
         }
 
         QApplication::quit();
+    });
+
+    //再玩一次
+    connect(m_restartBtn, &GraphicsImageButton::clicked, this, [=](){
+        //先停掉结局背景音乐
+        if(m_endAudio)
+        {
+            m_endAudio->stop();
+            m_endAudio->deleteLater();
+            m_endAudioOut->deleteLater();
+            m_endAudio = nullptr;
+            m_endAudioOut = nullptr;
+        }
+
+        //关闭并销毁当前 GameScene 整个游戏窗口
+        m_gameScene->close();
+        m_gameScene->deleteLater();
+
+        //重新创建并显示初始主界面 MainScene
+        MainScene *main = new MainScene;
+        main->show();
     });
 }

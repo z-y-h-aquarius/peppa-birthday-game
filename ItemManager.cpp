@@ -187,6 +187,9 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
 //点击食谱
 void ItemManager::onRecipeClicked()
 {
+    if(m_gameFinished)
+        return;
+
     if (m_recipeCollected){
         if (m_tipPeppa) {
             m_gameScene->m_scene.removeItem(m_tipPeppa);
@@ -204,7 +207,7 @@ void ItemManager::onRecipeClicked()
         m_darkBg->hide();//背景变亮
 
         int index = bagItemCount;
-        int x = 1120;
+        int x = 1127;
         int y = 50 + index * 90;
         bagItemCount++;
 
@@ -227,6 +230,9 @@ void ItemManager::onRecipeClicked()
 //点击鸡蛋
 void ItemManager::onEggClicked()
 {
+    if(m_gameFinished)
+        return;
+
     //鸡蛋已经在背包里
     if (m_eggCollected){
         // 如果已经有弹窗，先删掉，防止重复
@@ -248,7 +254,7 @@ void ItemManager::onEggClicked()
 
         //计算背包格子位置
         int index = bagItemCount;
-        int x = 1015;
+        int x = 1115;
         int y = 50 + index * 90;
         bagItemCount++;//背包物品数+1，下一个道具用下一个位置
 
@@ -271,6 +277,9 @@ void ItemManager::onEggClicked()
 //点击黄油
 void ItemManager::onButterClicked()
 {
+    if(m_gameFinished)
+        return;
+
     //黄油已经在背包里
     if (m_butterCollected){
         // 如果已经有弹窗，先删掉，防止重复
@@ -292,7 +301,7 @@ void ItemManager::onButterClicked()
 
         //计算背包格子位置
         int index = bagItemCount;
-        int x = 1015;
+        int x = 1115;
         int y = 50 + index * 90;
         bagItemCount++;//背包物品数+1，下一个道具用下一个位置
 
@@ -313,6 +322,9 @@ void ItemManager::onButterClicked()
 //点击巧克力
 void ItemManager::onChocolateClicked()
 {
+    if(m_gameFinished)
+        return;
+
     if (m_chocolateCollected){
         if (m_tipPeppa) {
             m_gameScene->m_scene.removeItem(m_tipPeppa);
@@ -328,7 +340,7 @@ void ItemManager::onChocolateClicked()
         m_chocolateCollected = true;
 
         int index = bagItemCount;
-        int x = 1120;
+        int x = 1122;
         int y = 50 + index * 90;
         bagItemCount++;
 
@@ -348,6 +360,9 @@ void ItemManager::onChocolateClicked()
 //点击牛奶
 void ItemManager::onMilkClicked()
 {
+    if(m_gameFinished)
+        return;
+
     if (m_milkCollected){
         if (m_tipPeppa) {
             m_gameScene->m_scene.removeItem(m_tipPeppa);
@@ -363,7 +378,7 @@ void ItemManager::onMilkClicked()
         m_milkCollected = true;
 
         int index = bagItemCount;
-        int x = 1125;
+        int x = 1134;
         int y = 50 + index * 90;
         bagItemCount++;
 
@@ -383,6 +398,9 @@ void ItemManager::onMilkClicked()
 //点击面粉
 void ItemManager::onFlourClicked()
 {
+    if(m_gameFinished)
+        return;
+
     if (m_flourCollected){
         if (m_tipPeppa) {
             m_gameScene->m_scene.removeItem(m_tipPeppa);
@@ -398,7 +416,7 @@ void ItemManager::onFlourClicked()
         m_flourCollected = true;
 
         int index = bagItemCount;
-        int x = 1110;
+        int x = 1115;
         int y = 50 + index * 90;
         bagItemCount++;
 
@@ -416,7 +434,6 @@ void ItemManager::onFlourClicked()
     }
 }
 
-
 void ItemManager::onEnvelopeClicked()
 {
     if (m_envelopeClicked) {
@@ -425,6 +442,7 @@ void ItemManager::onEnvelopeClicked()
 
     m_darkBg->show();//背景变暗
     m_recipeBtn->show();
+    m_envelopeClicked = true;
 }
 
 //点击鸡蛋锁
@@ -526,6 +544,8 @@ void ItemManager::ifMakeCake()
         return;
 
     //====================== 已经集齐 ======================
+    m_gameFinished = true;
+
     QTimer::singleShot(1000,this,[=]() {
         //合成图
         m_collectDoneImg = new QGraphicsPixmapItem;
@@ -553,7 +573,7 @@ void ItemManager::ifMakeCake()
         int btnW = 187;
         int btnH = 67;
         int btnX = imgX + (imgW - btnW) / 2 + 13;
-        int btnY = imgY + (imgH - btnH) / 2 + 77;
+        int btnY = imgY + (imgH - btnH) / 2 + 79;
 
         m_makeCakeBtn->setPos(btnX, btnY);
         m_gameScene->m_scene.addItem(m_makeCakeBtn);

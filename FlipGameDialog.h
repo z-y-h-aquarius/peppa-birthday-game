@@ -6,6 +6,8 @@
 #include <QPushButton>
 #include <QVector>
 #include <QPixmap>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 class FlipGameDialog : public QDialog
 {
@@ -18,9 +20,15 @@ private slots:
 
 private:
     void checkSuccess();  //检查是否通关
+    void showRule();
+    void backToPuzzle();
+    void onSkipClicked();
 
     QVector<QPixmap> m_frontPix;  //正面图
     QPixmap m_backPix;            //背面图
+
+    QWidget* pagePuzzle;
+    QWidget* pageRule;
 
     QPushButton* m_firstBtn = nullptr;
     bool m_isFlipping = false;

@@ -211,21 +211,21 @@ void LightPuzzle::onSkipClicked()
     }
 }
 
-// 规则页
+//规则页
 void LightPuzzle::showRule()
 {
     pagePuzzle->hide();
     pageRule->show();
 }
 
-// 规则页
+//提示页
 void LightPuzzle::showTip()
 {
     pagePuzzle->hide();
     pageTip->show();
 }
 
-// 返回游戏
+//返回游戏
 void LightPuzzle::backToPuzzle()
 {
     pageRule->hide();

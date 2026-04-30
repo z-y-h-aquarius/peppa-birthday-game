@@ -3,12 +3,37 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <algorithm>
+#include <QTextEdit>
 
 FlipGameDialog::FlipGameDialog(QWidget *parent)
     : QDialog(parent)
 {
     setWindowTitle("纸牌配对游戏");
-    setFixedSize(400,568);
+    setFixedSize(400,600);
+
+    //规则页面
+    pageRule = new QWidget(this);
+    QVBoxLayout* ruleLayout = new QVBoxLayout(pageRule);
+
+    QTextEdit* ruleText = new QTextEdit();
+    ruleText->setReadOnly(true);
+    ruleText->setHtml(R"(
+        <div style="font-size:18px;">
+        <h2>纸牌配对规则</h2>
+        <p>1. 点击卡牌进行翻面。</p >
+        <p>2. 每次只能翻开两张牌。</p >
+        <p>3. 两张牌图案相同则配对成功并锁定。</p >
+        <p>4. 全部配对完成即可解锁通关。</p >
+    )");
+
+    //返回按钮
+    QPushButton* btnBack1 = new QPushButton("返回");
+    ruleLayout->addWidget(ruleText);
+    ruleLayout->addWidget(btnBack1);
+    connect(btnBack1, &QPushButton::clicked, this, &FlipGameDialog::backToPuzzle);
+
+    pagePuzzle = new QWidget(this);
+    QVBoxLayout* mainLayout = new QVBoxLayout(pagePuzzle);
 
     m_backPix = QPixmap("://image/cardback.png").scaled(80,122);
 
@@ -33,7 +58,7 @@ FlipGameDialog::FlipGameDialog(QWidget *parent)
     std::shuffle(m_frontPix.begin(), m_frontPix.end(), *QRandomGenerator::global());
 
     //纸牌布局
-    QGridLayout* layout = new QGridLayout(this);
+    QGridLayout* layout = new QGridLayout();
     for(int i=0; i<16; i++){
         QPushButton* btn = new QPushButton;
         btn->setIcon(m_backPix);
@@ -45,6 +70,26 @@ FlipGameDialog::FlipGameDialog(QWidget *parent)
         //存索引，让按钮记住自己对应的是第几张正面图
         btn->setProperty("index", i);
     }
+
+    //底部按钮栏：查看规则、跳过
+    QHBoxLayout* btnBar = new QHBoxLayout();
+    QPushButton* btnRule = new QPushButton("查看规则");
+    QPushButton* btnSkip = new QPushButton("跳过");
+
+    btnBar->addWidget(btnRule);
+    btnBar->addWidget(btnSkip);
+
+    connect(btnRule, &QPushButton::clicked, this, &FlipGameDialog::showRule);
+    connect(btnSkip, &QPushButton::clicked, this, &FlipGameDialog::onSkipClicked);
+
+    mainLayout->addLayout(layout);
+    mainLayout->addLayout(btnBar);
+
+    //全局层级布局
+    QVBoxLayout* globalLayout = new QVBoxLayout(this);
+    globalLayout->addWidget(pagePuzzle);
+    globalLayout->addWidget(pageRule);
+    pageRule->hide();
 }
 
 void FlipGameDialog::cardClicked()
@@ -104,6 +149,29 @@ void FlipGameDialog::checkSuccess()
     //匹配完八对
     if(m_pairCount == 8){
         QMessageBox::information(this, "恭喜", "解锁成功！");
+        accept();
+    }
+}
+
+//查看规则
+void FlipGameDialog::showRule()
+{
+    pagePuzzle->hide();
+    pageRule->show();
+}
+
+//返回游戏页面
+void FlipGameDialog::backToPuzzle()
+{
+    pageRule->hide();
+    pagePuzzle->show();
+}
+
+//跳过谜题
+void FlipGameDialog::onSkipClicked()
+{
+    auto ret = QMessageBox::question(this, "跳过", "不再想想了吗？");
+    if (ret == QMessageBox::Yes) {
         accept();
     }
 }

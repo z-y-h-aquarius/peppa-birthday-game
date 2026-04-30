@@ -87,6 +87,9 @@ private:
     bool m_flourCollected = false;
     bool m_recipeCollected = false;
 
+    //标记：是否收集完毕
+    bool m_gameFinished = false;
+
     QList<QString> allCards;
 
 protected:
