@@ -48,6 +48,7 @@ CakeScene::CakeScene(GameScene *gameScene, QWidget *parent)
     m_ovenLockBtn->setPos(150,410);
     m_ovenLockBtn->setZValue(112);
     m_gameScene->m_scene.addItem(m_ovenLockBtn);
+    m_ovenLockBtn->setCursor(Qt::PointingHandCursor);
 
     connect(m_ovenLockBtn, &GraphicsImageButton::clicked, this,&CakeScene::onOvenLockClicked);
 
@@ -82,15 +83,16 @@ CakeScene::CakeScene(GameScene *gameScene, QWidget *parent)
 //点击烤箱锁
 void CakeScene::onOvenLockClicked()
 {
-    if(m_ovenlockSolved)
+    if(m_ovenlockSolved||m_tipPeppa)
         return;
 
     //显示题目
-    PuzzleDialog dlg("://image/ovenpuzzle.png","://image/oventip.png","waiter","://image/ovenanswer.png");
+    PuzzleDialog dlg("://image/ovenpuzzle.png","://image/oventip.png","waiter","://image/ovenanswer.png","字母密码");
 
     if(dlg.exec() == QDialog::Accepted){
         m_ovenlockSolved = true;
         m_cakeInOvenImg->show();
+        m_ovenLockBtn->setCursor(Qt::ArrowCursor);
 
         QTimer::singleShot(3000,this,[=]() {
             m_cakeInOvenImg->hide();

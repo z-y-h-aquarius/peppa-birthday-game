@@ -8,11 +8,12 @@
 #include <QPixmap>
 #include <QDebug>
 //构造：接收题目，提示，答案，正确密码
-PuzzleDialog::PuzzleDialog(QString puzzleImg,QString tipImg,QString answer,QString answerImg,QWidget *parent)
+PuzzleDialog::PuzzleDialog(QString puzzleImg,QString tipImg,QString answer,QString answerImg,QString windowText,QWidget *parent)
     : QDialog(parent)
 {
     setFixedSize(600,500);
-    setWindowTitle("四位数字密码");
+
+    setWindowTitle(windowText);
 
     //显示题目图片
     QLabel *imgLabel = new QLabel;

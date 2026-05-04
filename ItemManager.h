@@ -35,6 +35,7 @@ private slots:
     void onChocolateLockClicked();
     void onMilkLockClicked();
     void onFlourLockClicked();
+    void onBoxClicked();
 
     //判断是否开始做蛋糕
     void ifMakeCake();
@@ -54,13 +55,13 @@ private:
     GraphicsImageButton *m_envelopeBtn;
     GraphicsImageButton *m_recipeBtn;
     GraphicsImageButton *m_makeCakeBtn;
+    GraphicsImageButton *m_box;
 
     QGraphicsPixmapItem *m_fridgemImg;
     QGraphicsPixmapItem *m_fridgedImg;
     QGraphicsPixmapItem *m_rightCabinet;
     QGraphicsPixmapItem *m_leftCabinet;
     QGraphicsPixmapItem *m_eggPuz;
-    QGraphicsPixmapItem *m_box;
     QGraphicsPixmapItem *m_openBox;
     QGraphicsPixmapItem *m_collectDoneImg;
 
@@ -89,6 +90,8 @@ private:
 
     //标记：是否收集完毕
     bool m_gameFinished = false;
+
+    bool ifTip = false;
 
     QList<QString> allCards;
 

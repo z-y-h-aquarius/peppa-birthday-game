@@ -34,6 +34,9 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
     //先隐藏
     m_eggBtn->hide();
 
+    //显示手掌光标
+    m_eggBtn->setCursor(Qt::PointingHandCursor);
+
     list << m_eggBtn;
 
     //黄油道具
@@ -41,6 +44,7 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
     m_butterBtn->setPos(865,380);
     connect(m_butterBtn, &GraphicsImageButton::clicked, this, &ItemManager::onButterClicked);
     m_butterBtn->hide();
+    m_butterBtn->setCursor(Qt::PointingHandCursor);
     list << m_butterBtn;
 
     //巧克力道具
@@ -48,12 +52,14 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
     m_chocolateBtn->setPos(479,383);
     connect(m_chocolateBtn, &GraphicsImageButton::clicked, this, &ItemManager::onChocolateClicked);
     m_chocolateBtn->hide();
+    m_chocolateBtn->setCursor(Qt::PointingHandCursor);
     list << m_chocolateBtn;
 
     //牛奶道具
     m_milkBtn = new GraphicsImageButton("://image/milk.png", "",112,55);
     m_milkBtn->setPos(75,430);
     connect(m_milkBtn, &GraphicsImageButton::clicked, this, &ItemManager::onMilkClicked);
+    m_milkBtn->setCursor(Qt::PointingHandCursor);
     m_milkBtn->hide();
     list << m_milkBtn;
 
@@ -61,6 +67,7 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
     m_flourBtn = new GraphicsImageButton("://image/flour.png", "",71,50);
     m_flourBtn->setPos(680,520);
     connect(m_flourBtn, &GraphicsImageButton::clicked, this, &ItemManager::onFlourClicked);
+    m_flourBtn->setCursor(Qt::PointingHandCursor);
     m_flourBtn->hide();
     list << m_flourBtn;
 
@@ -68,6 +75,7 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
     m_envelopeBtn = new GraphicsImageButton("://image/envelope.png", "",111,50);
     m_envelopeBtn->setPos(380,520);
     connect(m_envelopeBtn, &GraphicsImageButton::clicked, this, &ItemManager::onEnvelopeClicked);
+    m_envelopeBtn->setCursor(Qt::PointingHandCursor);
     list << m_envelopeBtn;
 
     //食谱
@@ -75,6 +83,7 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
     m_recipeBtn->setPos(450,100);
     connect(m_recipeBtn, &GraphicsImageButton::clicked, this, &ItemManager::onRecipeClicked);
     list << m_recipeBtn;
+    m_recipeBtn->setCursor(Qt::PointingHandCursor);
     m_recipeBtn->setZValue(110);
     m_recipeBtn->hide();
 
@@ -82,6 +91,7 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
     m_egglockBtn = new GraphicsImageButton("://image/egglock.png","",40,40);
     m_egglockBtn->setPos(815,320);
     connect(m_egglockBtn, &GraphicsImageButton::clicked, this, &ItemManager::onEggLockClicked);
+    m_egglockBtn->setCursor(Qt::PointingHandCursor);
     list << m_egglockBtn;
     m_egglockBtn->setZValue(100);
 
@@ -97,31 +107,37 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
     m_butterlockBtn->setPos(822,397);
     connect(m_butterlockBtn, &GraphicsImageButton::clicked, this, &ItemManager::onButterLockClicked);
     list << m_butterlockBtn;
+    m_butterlockBtn->setCursor(Qt::PointingHandCursor);
     m_butterlockBtn->setZValue(101);
 
     //巧克力锁
     m_chocolatelockBtn = new GraphicsImageButton("://image/chocolatelock.png","",40,50);
     m_chocolatelockBtn->setPos(500,395);
     connect(m_chocolatelockBtn, &GraphicsImageButton::clicked, this, &ItemManager::onChocolateLockClicked);
+    m_chocolatelockBtn->setCursor(Qt::PointingHandCursor);
     list << m_chocolatelockBtn;
 
     //牛奶锁
     m_milklockBtn = new GraphicsImageButton("://image/milklock.png","",40,50);
     m_milklockBtn->setPos(85,395);
     connect(m_milklockBtn, &GraphicsImageButton::clicked, this, &ItemManager::onMilkLockClicked);
+    m_milklockBtn->setCursor(Qt::PointingHandCursor);
     list << m_milklockBtn;
 
     //面粉锁
     m_flourlockBtn = new GraphicsImageButton("://image/flourlock.png","",30,30);
     m_flourlockBtn->setPos(555,500);
     connect(m_flourlockBtn, &GraphicsImageButton::clicked, this, &ItemManager::onFlourLockClicked);
+    m_flourlockBtn->setCursor(Qt::PointingHandCursor);
     list << m_flourlockBtn;
 
     //盒子
-    m_box = new QGraphicsPixmapItem;
-    m_box->setPixmap(QPixmap("://image/box.png").scaled(84,75));
+    m_box = new GraphicsImageButton("://image/box.png","",84,75);
     m_box->setPos(530,500);
     m_gameScene->m_scene.addItem(m_box);
+    connect(m_box, &GraphicsImageButton::clicked, this, &ItemManager::onBoxClicked);
+    m_box->setCursor(Qt::PointingHandCursor);
+    list << m_box;
 
     //打开的盒子
     m_openBox = new QGraphicsPixmapItem;
@@ -194,6 +210,7 @@ void ItemManager::showTipMessage(const QString& text)
         delete m_tipPeppa;
         m_tipPeppa = nullptr;
     }
+    ifTip = true;
     m_tipPeppa = new PeppaDialog;
     m_tipPeppa->setText(text);
     //加到GameScene的场景里，显示提示
@@ -226,7 +243,7 @@ void ItemManager::flyItemToBag(GraphicsImageButton* btn, int bagX, double scale)
 //点击食谱
 void ItemManager::onRecipeClicked()
 {
-    if(m_gameFinished)
+    if(m_gameFinished||ifTip)
         return;
 
     if (m_recipeCollected){
@@ -240,6 +257,7 @@ void ItemManager::onRecipeClicked()
 
         flyItemToBag(m_recipeBtn, 1127, 0.15);
 
+        m_recipeBtn->setCursor(Qt::ArrowCursor);
         ifMakeCake();
     }
 }
@@ -247,7 +265,7 @@ void ItemManager::onRecipeClicked()
 //点击鸡蛋
 void ItemManager::onEggClicked()
 {
-    if(m_gameFinished)
+    if(m_gameFinished||ifTip)
         return;
 
     //鸡蛋已经在背包里
@@ -264,6 +282,7 @@ void ItemManager::onEggClicked()
         m_egglockBtn->show();//鸡蛋锁出现
         m_eggPuz->show();
 
+        m_eggBtn->setCursor(Qt::ArrowCursor);
         ifMakeCake();
     }
 }
@@ -271,7 +290,7 @@ void ItemManager::onEggClicked()
 //点击黄油
 void ItemManager::onButterClicked()
 {
-    if(m_gameFinished)
+    if(m_gameFinished||ifTip)
         return;
 
     //黄油已经在背包里
@@ -287,6 +306,7 @@ void ItemManager::onButterClicked()
         m_fridgedImg->hide();//冰箱中部关闭
         m_butterlockBtn->show();
 
+        m_butterBtn->setCursor(Qt::ArrowCursor);
         ifMakeCake();
     }
 }
@@ -294,7 +314,7 @@ void ItemManager::onButterClicked()
 //点击巧克力
 void ItemManager::onChocolateClicked()
 {
-    if(m_gameFinished)
+    if(m_gameFinished||ifTip)
         return;
 
     if (m_chocolateCollected){
@@ -309,6 +329,7 @@ void ItemManager::onChocolateClicked()
         m_rightCabinet->hide();//右侧柜门关闭
         m_chocolatelockBtn->show();
 
+        m_chocolateBtn->setCursor(Qt::ArrowCursor);
         ifMakeCake();
     }
 }
@@ -316,7 +337,7 @@ void ItemManager::onChocolateClicked()
 //点击牛奶
 void ItemManager::onMilkClicked()
 {
-    if(m_gameFinished)
+    if(m_gameFinished||ifTip)
         return;
 
     if (m_milkCollected){
@@ -331,6 +352,7 @@ void ItemManager::onMilkClicked()
         m_leftCabinet->hide();//左侧柜门关闭
         m_milklockBtn->show();
 
+        m_milkBtn->setCursor(Qt::ArrowCursor);
         ifMakeCake();
     }
 }
@@ -338,7 +360,7 @@ void ItemManager::onMilkClicked()
 //点击面粉
 void ItemManager::onFlourClicked()
 {
-    if(m_gameFinished)
+    if(m_gameFinished||ifTip)
         return;
 
     if (m_flourCollected){
@@ -354,30 +376,33 @@ void ItemManager::onFlourClicked()
         m_box->show();
         m_flourlockBtn->show();
 
+        m_flourBtn->setCursor(Qt::ArrowCursor);
         ifMakeCake();
     }
 }
 
+//点击信封
 void ItemManager::onEnvelopeClicked()
 {
-    if (m_envelopeClicked) {
+    if (m_envelopeClicked||ifTip) {
         return;
     }
 
     m_darkBg->show();//背景变暗
     m_recipeBtn->show();
     m_envelopeClicked = true;
+    m_envelopeBtn->setCursor(Qt::ArrowCursor);
 }
 
 //点击鸡蛋锁
 void ItemManager::onEggLockClicked()
 {
-    //已经解开->直接不理
-    if (m_egglockSolved) {
+    //已经解开/有提示框，点击无效
+    if (m_egglockSolved||ifTip) {
         return;
     }
     //显示题目
-    PuzzleDialog dlg("://image/eggpuzzle.png","://image/eggtip.png","3506","://image/egganswer.png");
+    PuzzleDialog dlg("://image/eggpuzzle.png","://image/eggtip.png","3506","://image/egganswer.png","四位数字密码");
 
     //密码正确
     //模态对话框 阻塞等待操作，仅当密码正确时执行解锁
@@ -388,7 +413,7 @@ void ItemManager::onEggLockClicked()
         m_fridgemImg->show();//解开锁，冰箱中部打开
         m_eggPuz->hide();
         m_eggBtn->show();//解开锁，鸡蛋出现
-
+        m_egglockBtn->setCursor(Qt::ArrowCursor);
     }
 
 }
@@ -396,7 +421,7 @@ void ItemManager::onEggLockClicked()
 //点击黄油锁
 void ItemManager::onButterLockClicked()
 {
-    if (m_butterlockSolved) {
+    if (m_butterlockSolved||ifTip) {
         return;
     }
 
@@ -408,13 +433,14 @@ void ItemManager::onButterLockClicked()
         m_butterlockBtn->hide();
         m_fridgedImg->show();//解开锁，冰箱下部打开
         m_butterBtn->show();//解开锁，黄油出现
+        m_butterlockBtn->setCursor(Qt::ArrowCursor);
     }
 }
 
 //点击巧克力锁
 void ItemManager::onChocolateLockClicked()
 {
-    if (m_chocolatelockSolved) {
+    if (m_chocolatelockSolved||ifTip) {
         return;
     }
     //显示翻牌游戏
@@ -424,13 +450,14 @@ void ItemManager::onChocolateLockClicked()
         m_chocolatelockBtn->hide();
         m_rightCabinet->show();//解开锁，右侧柜门打开
         m_chocolateBtn->show();//解开锁，巧克力出现
+        m_chocolatelockBtn->setCursor(Qt::ArrowCursor);
     }
 }
 
 //点击牛奶锁
 void ItemManager::onMilkLockClicked()
 {
-    if (m_milklockSolved) {
+    if (m_milklockSolved||ifTip) {
         return;
     }
     //显示点灯游戏
@@ -440,17 +467,18 @@ void ItemManager::onMilkLockClicked()
         m_milklockBtn->hide();
         m_leftCabinet->show();//解开锁，左侧柜门打开
         m_milkBtn->show();//解开锁，牛奶出现
+        m_milklockBtn->setCursor(Qt::ArrowCursor);
     }
 }
 
 //点击面粉锁
 void ItemManager::onFlourLockClicked()
 {
-    if (m_flourlockSolved) {
+    if (m_flourlockSolved||ifTip) {
         return;
     }
     //显示题目
-    PuzzleDialog dlg("://image/flourpuzzle.png","://image/flourtip.png","5269","://image/flouranswer.png");
+    PuzzleDialog dlg("://image/flourpuzzle.png","://image/flourtip.png","5269","://image/flouranswer.png","四位数字密码");
 
     if(dlg.exec() == QDialog::Accepted){
         m_flourlockSolved = true;
@@ -458,13 +486,35 @@ void ItemManager::onFlourLockClicked()
         m_box->hide();
         m_openBox->show();
         m_flourBtn->show();
+        m_flourlockBtn->setCursor(Qt::ArrowCursor);
+        m_box->setCursor(Qt::ArrowCursor);
+    }
+}
+
+//点击盒子
+void ItemManager::onBoxClicked()
+{
+    if (m_flourlockSolved||ifTip) {
+        return;
+    }
+    //显示题目
+    PuzzleDialog dlg("://image/flourpuzzle.png","://image/flourtip.png","5269","://image/flouranswer.png","四位数字密码");
+
+    if(dlg.exec() == QDialog::Accepted){
+        m_flourlockSolved = true;
+        m_flourlockBtn->hide();
+        m_box->hide();
+        m_openBox->show();
+        m_flourBtn->show();
+        m_box->setCursor(Qt::ArrowCursor);
+        m_flourlockBtn->setCursor(Qt::ArrowCursor);
     }
 }
 
 void ItemManager::ifMakeCake()
 {
     //先判断是否集齐
-    if (bagItemCount!=6)
+    if (bagItemCount!=6&&!(!m_envelopeClicked&&bagItemCount==5))
         return;
 
     //====================== 已经集齐 ======================
@@ -524,6 +574,7 @@ void ItemManager::mousePressEvent(QMouseEvent *event)
         m_gameScene->m_scene.removeItem(m_tipPeppa);
         delete m_tipPeppa;
         m_tipPeppa = nullptr;
+        ifTip = false;
     }
 
     QWidget::mousePressEvent(event);

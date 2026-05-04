@@ -13,6 +13,7 @@ public:
         QString tipImg,//提示图
         QString answer,//正确密码
         QString answerImg,//答案图
+        QString windowText,
         QWidget *parent = nullptr);
 
     //判断是否答对
