@@ -63,7 +63,7 @@ MainScene::MainScene(QWidget *parent)
     infoBtn->setPos(btnX, middleBtnY);
     quitBtn->setPos(btnX, bottomBtnY);
 
-    // 开始游戏
+    //开始游戏
     connect(startBtn, &GraphicsImageButton::clicked, this, &MainScene::startGame);
 
     //关于游戏
