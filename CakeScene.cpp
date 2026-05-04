@@ -37,9 +37,9 @@ CakeScene::CakeScene(GameScene *gameScene, QWidget *parent)
     //蛋糕放入烤箱的图片
     m_cakeInOvenImg = new QGraphicsPixmapItem;
     QPixmap ovenPix("://image/cakeinoven.png");
-    ovenPix = ovenPix.scaled(150,70,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+    ovenPix = ovenPix.scaled(139,70,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     m_cakeInOvenImg->setPixmap(ovenPix);
-    m_cakeInOvenImg->setPos(145,415);
+    m_cakeInOvenImg->setPos(147,415);
     m_gameScene->m_scene.addItem(m_cakeInOvenImg);
     m_cakeInOvenImg->hide();
 
@@ -58,6 +58,7 @@ CakeScene::CakeScene(GameScene *gameScene, QWidget *parent)
     m_cakeImg->setPixmap(cakePix);
     m_cakeImg->setPos(400,200);
     m_gameScene->m_scene.addItem(m_cakeImg);
+    m_cakeImg->setZValue(119);
     m_cakeImg->hide();
 
     //蜡烛
@@ -97,6 +98,7 @@ void CakeScene::onOvenLockClicked()
             m_candlesBtn->show();
             m_tipPeppa = new PeppaDialog;
             m_tipPeppa->setText("烤好啦，现在我们需要插上一些蜡烛~");
+            m_tipPeppa->setZValue(122);
             m_gameScene->m_scene.addItem(m_tipPeppa);
         });
     }
@@ -173,21 +175,15 @@ void CakeScene::playVideo(const QString &videoPath, void (CakeScene::*finishedSl
     connect(m_player, &QMediaPlayer::mediaStatusChanged, this, [=](QMediaPlayer::MediaStatus status) {
         if (status == QMediaPlayer::EndOfMedia)
         {
-            // 先暂停，锁住最后一帧
-            m_player->pause();
+            m_gameScene->m_scene.removeItem(m_videoItem);
+            m_videoItem->deleteLater();
+            m_player->deleteLater();
+            m_audio->deleteLater();
+            m_videoItem = nullptr;
+            m_player = nullptr;
+            m_audio = nullptr;
 
-            // 延迟 600ms 再销毁，补齐丢失的后半秒
-            QTimer::singleShot(600, this, [=](){
-                m_gameScene->m_scene.removeItem(m_videoItem);
-                m_videoItem->deleteLater();
-                m_player->deleteLater();
-                m_audio->deleteLater();
-                m_videoItem = nullptr;
-                m_player = nullptr;
-                m_audio = nullptr;
-
-                (this->*finishedSlot)();
-            });
+            (this->*finishedSlot)();
         }
     });
 }

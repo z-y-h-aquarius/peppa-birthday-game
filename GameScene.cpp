@@ -17,7 +17,7 @@ GameScene::GameScene(QWidget *parent)
 //视频播放函数
 void GameScene::playVideo(const QString &videoPath, void (GameScene::*finishedSlot)())
 {
-    // 新建播放器和视频窗口
+    //新建播放器和视频窗口
     m_videoWidget = new QVideoWidget(this);
     m_player = new QMediaPlayer(this);
     m_audio = new QAudioOutput(this);
@@ -27,18 +27,18 @@ void GameScene::playVideo(const QString &videoPath, void (GameScene::*finishedSl
     m_audio->setVolume(1.0);
     m_videoWidget->setAspectRatioMode(Qt::KeepAspectRatioByExpanding);
 
-    // 铺满窗口
+    //铺满窗口
     delete layout();
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(m_videoWidget);
     layout->setContentsMargins(0,0,0,0);
     setLayout(layout);
 
-    // 开始播放
+    //开始播放
     m_player->setSource(QUrl::fromLocalFile(videoPath));
     m_player->play();
 
-    // 绑定视频结束信号
+    //绑定视频结束信号
     connect(m_player, &QMediaPlayer::mediaStatusChanged, this, [=](QMediaPlayer::MediaStatus status) {
         if (status == QMediaPlayer::EndOfMedia) {
             (this->*finishedSlot)();
@@ -56,7 +56,7 @@ void GameScene::openGameBGM()
     m_bgmPlayer->setAudioOutput(m_bgmAudio);
     m_bgmAudio->setVolume(0.22);
 
-    //你的bgm资源路径
+    //bgm资源路径
     m_bgmPlayer->setSource(QUrl::fromLocalFile("bgm.mp3"));
 
     //无限循环
@@ -85,7 +85,7 @@ void GameScene::closeGameBGM()
 //开始视频播完
 void GameScene::StartVideoFinished()
 {
-    // 清理视频资源
+    //清理视频资源
     m_videoWidget->deleteLater();
     m_player->deleteLater();
     m_audio->deleteLater();

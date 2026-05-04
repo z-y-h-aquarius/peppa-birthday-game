@@ -45,7 +45,7 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
 
     //巧克力道具
     m_chocolateBtn = new GraphicsImageButton("://image/chocolate.png","",61,45);
-    m_chocolateBtn->setPos(500,388);
+    m_chocolateBtn->setPos(479,383);
     connect(m_chocolateBtn, &GraphicsImageButton::clicked, this, &ItemManager::onChocolateClicked);
     m_chocolateBtn->hide();
     list << m_chocolateBtn;
@@ -132,22 +132,22 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
 
     //冰箱中部
     m_fridgemImg = new QGraphicsPixmapItem;
-    m_fridgemImg->setPixmap(QPixmap("://image/fridgemiddle.png").scaled(215,347));
-    m_fridgemImg->setPos(798,160);
+    m_fridgemImg->setPixmap(QPixmap("://image/fridgemiddle.png").scaled(206,333));
+    m_fridgemImg->setPos(798,163);
     m_gameScene->m_scene.addItem(m_fridgemImg);
     m_fridgemImg->hide();
 
     //冰箱下部
     m_fridgedImg = new QGraphicsPixmapItem;
-    m_fridgedImg->setPixmap(QPixmap("://image/fridgedown.png").scaled(247,348));
-    m_fridgedImg->setPos(800,157);
+    m_fridgedImg->setPixmap(QPixmap("://image/fridgedown.png").scaled(241,340));
+    m_fridgedImg->setPos(800,162);
     m_gameScene->m_scene.addItem(m_fridgedImg);
     m_fridgedImg->hide();
 
     //右侧柜门
     m_rightCabinet = new QGraphicsPixmapItem;
     m_rightCabinet->setPixmap(QPixmap("://image/rightcabinet.png").scaled(218,180));
-    m_rightCabinet->setPos(435,318);
+    m_rightCabinet->setPos(414,315);
     m_gameScene->m_scene.addItem(m_rightCabinet);
     m_rightCabinet->hide();
 
@@ -184,6 +184,45 @@ QList<GraphicsImageButton*> ItemManager::createAllPuzzleItems()
     return list;
 }
 
+//弹出提示框
+void ItemManager::showTipMessage(const QString& text)
+{
+    // 如果已经有弹窗，先删掉，防止重复
+    if (m_tipPeppa) {
+        // 先从场景移除，再删除，否则会残留图形
+        m_gameScene->m_scene.removeItem(m_tipPeppa);
+        delete m_tipPeppa;
+        m_tipPeppa = nullptr;
+    }
+    m_tipPeppa = new PeppaDialog;
+    m_tipPeppa->setText(text);
+    //加到GameScene的场景里，显示提示
+    m_gameScene->m_scene.addItem(m_tipPeppa);
+}
+
+//飞入背包
+void ItemManager::flyItemToBag(GraphicsImageButton* btn, int bagX, double scale)
+{
+    int index = bagItemCount;
+    int y = 50 + index * 90;
+    bagItemCount++;//背包物品数+1，下一个道具用下一个位置
+
+    //缩放
+    if (scale != 1.0) {
+        QTransform transform;
+        transform.scale(scale, scale);
+        btn->setTransform(transform);
+    }
+
+    //飞行动画
+    QPropertyAnimation *fly = new QPropertyAnimation(btn, "pos");
+    fly->setStartValue(btn->pos());//动画起点
+    fly->setEndValue(QPoint(bagX, y));//动画终点
+    fly->setDuration(600);//动画时长(ms)
+    fly->start(QAbstractAnimation::DeleteWhenStopped);//启动动画，动画结束后自动删除对象，不占内存
+
+}
+
 //点击食谱
 void ItemManager::onRecipeClicked()
 {
@@ -191,14 +230,7 @@ void ItemManager::onRecipeClicked()
         return;
 
     if (m_recipeCollected){
-        if (m_tipPeppa) {
-            m_gameScene->m_scene.removeItem(m_tipPeppa);
-            delete m_tipPeppa;
-            m_tipPeppa = nullptr;
-        }
-        m_tipPeppa = new PeppaDialog;
-        m_tipPeppa->setText("快去收集食材吧~");
-        m_gameScene->m_scene.addItem(m_tipPeppa);
+        showTipMessage("快去收集食材吧~");
         return;
     }
     else{
@@ -206,22 +238,7 @@ void ItemManager::onRecipeClicked()
 
         m_darkBg->hide();//背景变亮
 
-        int index = bagItemCount;
-        int x = 1127;
-        int y = 50 + index * 90;
-        bagItemCount++;
-
-        //给按钮加缩放，缩小到原来的0.25倍
-        QTransform transform;
-        transform.scale(0.15,0.15);
-        m_recipeBtn->setTransform(transform);
-
-
-        QPropertyAnimation *fly = new QPropertyAnimation(m_recipeBtn,"pos");
-        fly->setStartValue(m_recipeBtn->pos());
-        fly->setEndValue(QPoint(x, y));
-        fly->setDuration(600);
-        fly->start(QAbstractAnimation::DeleteWhenStopped);
+        flyItemToBag(m_recipeBtn, 1127, 0.15);
 
         ifMakeCake();
     }
@@ -235,36 +252,13 @@ void ItemManager::onEggClicked()
 
     //鸡蛋已经在背包里
     if (m_eggCollected){
-        // 如果已经有弹窗，先删掉，防止重复
-        if (m_tipPeppa) {
-            // 先从场景移除，再删除，否则会残留图形
-            m_gameScene->m_scene.removeItem(m_tipPeppa);
-            delete m_tipPeppa;
-            m_tipPeppa = nullptr;
-        }
-        m_tipPeppa = new PeppaDialog;
-        m_tipPeppa->setText("先把食材都集齐吧~");
-
-        //加到GameScene的场景里，这是唯一正确的显示方式
-        m_gameScene->m_scene.addItem(m_tipPeppa);
+        showTipMessage("先把食材都集齐吧~");
         return;
     }
     else{
         m_eggCollected = true;//防止重复点击
 
-        //计算背包格子位置
-        int index = bagItemCount;
-        int x = 1115;
-        int y = 50 + index * 90;
-        bagItemCount++;//背包物品数+1，下一个道具用下一个位置
-
-        //动画：飞过去
-        //创建属性动画，作用对象是m_eggBtn,要修改的属性是pos
-        QPropertyAnimation *fly = new QPropertyAnimation(m_eggBtn,"pos");
-        fly->setStartValue(m_eggBtn->pos());//动画起点
-        fly->setEndValue(QPoint(x, y));//动画终点
-        fly->setDuration(600);//动画时长(ms)
-        fly->start(QAbstractAnimation::DeleteWhenStopped);//启动动画，动画结束后自动删除对象，不占内存
+        flyItemToBag(m_eggBtn, 1115);
 
         m_fridgemImg->hide();//冰箱中部关闭
         m_egglockBtn->show();//鸡蛋锁出现
@@ -282,35 +276,13 @@ void ItemManager::onButterClicked()
 
     //黄油已经在背包里
     if (m_butterCollected){
-        // 如果已经有弹窗，先删掉，防止重复
-        if (m_tipPeppa) {
-            // 先从场景移除，再删除，否则会残留图形
-            m_gameScene->m_scene.removeItem(m_tipPeppa);
-            delete m_tipPeppa;
-            m_tipPeppa = nullptr;
-        }
-        m_tipPeppa = new PeppaDialog;
-        m_tipPeppa->setText("先把食材都集齐吧~");
-
-        //加到GameScene的场景里，这是唯一正确的显示方式
-        m_gameScene->m_scene.addItem(m_tipPeppa);
+        showTipMessage("先把食材都集齐吧~");
         return;
     }
     else{
         m_butterCollected = true;//防止重复点击
 
-        //计算背包格子位置
-        int index = bagItemCount;
-        int x = 1115;
-        int y = 50 + index * 90;
-        bagItemCount++;//背包物品数+1，下一个道具用下一个位置
-
-        //动画：飞过去
-        QPropertyAnimation *fly = new QPropertyAnimation(m_butterBtn,"pos");
-        fly->setStartValue(m_butterBtn->pos());//动画起点
-        fly->setEndValue(QPoint(x, y));//动画终点
-        fly->setDuration(600);//动画时长(ms)
-        fly->start(QAbstractAnimation::DeleteWhenStopped);//启动动画，动画结束后自动删除对象，不占内存
+        flyItemToBag(m_butterBtn, 1115);
 
         m_fridgedImg->hide();//冰箱中部关闭
         m_butterlockBtn->show();
@@ -326,29 +298,13 @@ void ItemManager::onChocolateClicked()
         return;
 
     if (m_chocolateCollected){
-        if (m_tipPeppa) {
-            m_gameScene->m_scene.removeItem(m_tipPeppa);
-            delete m_tipPeppa;
-            m_tipPeppa = nullptr;
-        }
-        m_tipPeppa = new PeppaDialog;
-        m_tipPeppa->setText("先把食材都集齐吧~");
-        m_gameScene->m_scene.addItem(m_tipPeppa);
+        showTipMessage("先把食材都集齐吧~");
         return;
     }
     else{
         m_chocolateCollected = true;
 
-        int index = bagItemCount;
-        int x = 1122;
-        int y = 50 + index * 90;
-        bagItemCount++;
-
-        QPropertyAnimation *fly = new QPropertyAnimation(m_chocolateBtn,"pos");
-        fly->setStartValue(m_chocolateBtn->pos());
-        fly->setEndValue(QPoint(x, y));
-        fly->setDuration(600);
-        fly->start(QAbstractAnimation::DeleteWhenStopped);
+        flyItemToBag(m_chocolateBtn, 1122);
 
         m_rightCabinet->hide();//右侧柜门关闭
         m_chocolatelockBtn->show();
@@ -364,29 +320,13 @@ void ItemManager::onMilkClicked()
         return;
 
     if (m_milkCollected){
-        if (m_tipPeppa) {
-            m_gameScene->m_scene.removeItem(m_tipPeppa);
-            delete m_tipPeppa;
-            m_tipPeppa = nullptr;
-        }
-        m_tipPeppa = new PeppaDialog;
-        m_tipPeppa->setText("先把食材都集齐吧~");
-        m_gameScene->m_scene.addItem(m_tipPeppa);
+        showTipMessage("先把食材都集齐吧~");
         return;
     }
     else{
         m_milkCollected = true;
 
-        int index = bagItemCount;
-        int x = 1134;
-        int y = 50 + index * 90;
-        bagItemCount++;
-
-        QPropertyAnimation *fly = new QPropertyAnimation(m_milkBtn,"pos");
-        fly->setStartValue(m_milkBtn->pos());
-        fly->setEndValue(QPoint(x, y));
-        fly->setDuration(600);
-        fly->start(QAbstractAnimation::DeleteWhenStopped);
+        flyItemToBag(m_milkBtn, 1134);
 
         m_leftCabinet->hide();//左侧柜门关闭
         m_milklockBtn->show();
@@ -402,29 +342,13 @@ void ItemManager::onFlourClicked()
         return;
 
     if (m_flourCollected){
-        if (m_tipPeppa) {
-            m_gameScene->m_scene.removeItem(m_tipPeppa);
-            delete m_tipPeppa;
-            m_tipPeppa = nullptr;
-        }
-        m_tipPeppa = new PeppaDialog;
-        m_tipPeppa->setText("先把食材都集齐吧~");
-        m_gameScene->m_scene.addItem(m_tipPeppa);
+        showTipMessage("先把食材都集齐吧~");
         return;
     }
     else{
         m_flourCollected = true;
 
-        int index = bagItemCount;
-        int x = 1115;
-        int y = 50 + index * 90;
-        bagItemCount++;
-
-        QPropertyAnimation *fly = new QPropertyAnimation(m_flourBtn,"pos");
-        fly->setStartValue(m_flourBtn->pos());
-        fly->setEndValue(QPoint(x, y));
-        fly->setDuration(600);
-        fly->start(QAbstractAnimation::DeleteWhenStopped);
+        flyItemToBag(m_flourBtn, 1115);
 
         m_openBox->hide();
         m_box->show();

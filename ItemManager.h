@@ -92,6 +92,11 @@ private:
 
     QList<QString> allCards;
 
+    //弹出提示框
+    void showTipMessage(const QString& text);
+    //飞入背包
+    void flyItemToBag(GraphicsImageButton* btn, int bagX, double scale = 1.0);  // 统一飞入背包
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
 
